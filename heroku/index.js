@@ -210,10 +210,17 @@ app.post('/facebook', function(req, res) {
         connection.destroy();
         throw err;
       }
-      console.log(result);
+      // console.log(result);
 
-      result.forEach(row => {
-        console.log(row);
+      // result.forEach(row => {
+      //   console.log(row);
+
+        if (result.length == 0) {
+          res.sendStatus(200);
+        }
+
+        var row = result[0];
+
         var pageToken = row['page_token'];
         var ruleComment = row['rule_comment'];
         var ruleMessage = row['rule_message'];
@@ -230,15 +237,14 @@ app.post('/facebook', function(req, res) {
             .then(res => {
               console.log(`statusCode: ${res.statusCode}`)
               console.log(res)
-
-
               res.sendStatus(200);
             })
             .catch(error => {
+              res.sendStatus(400);
               console.error(error)
             })
         }        
-      });
+      // });
 
       connection.destroy();
     });
