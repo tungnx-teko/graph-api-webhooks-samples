@@ -230,6 +230,9 @@ app.post('/facebook', function(req, res) {
             .then(res => {
               console.log(`statusCode: ${res.statusCode}`)
               console.log(res)
+
+
+              res.sendStatus(200);
             })
             .catch(error => {
               console.error(error)
@@ -242,6 +245,4 @@ app.post('/facebook', function(req, res) {
 
   }
 
-
-  res.sendStatus(200);
 });
