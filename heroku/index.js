@@ -217,7 +217,7 @@ app.post('/facebook', function(req, res) {
       //   console.log(row);
 
         if (result.length == 0) {
-          res.sendStatus(200);
+          res.send(200);
           return
         }
 
@@ -240,10 +240,10 @@ app.post('/facebook', function(req, res) {
             .then(res => {
               console.log(`statusCode: ${res.statusCode}`)
               console.log(res)
-              res.sendStatus(200);
+              res.send(200);
             })
             .catch(error => {
-              res.sendStatus(400);
+              res.send(400);
               console.error(error)
             })
         }        
