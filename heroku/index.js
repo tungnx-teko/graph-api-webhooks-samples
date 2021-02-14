@@ -189,6 +189,7 @@ app.post('/facebook', function(req, res) {
   received_updates.unshift(req.body);
 
   var value = req.body['entry'][0]['changes'][0]['value'];
+  console.log(value);
 
   var message = value['message'];
   var postId = value['post_id'];
@@ -217,9 +218,11 @@ app.post('/facebook', function(req, res) {
 
         if (result.length == 0) {
           res.sendStatus(200);
+          return
         }
 
         var row = result[0];
+        console.log(row);
 
         var pageToken = row['page_token'];
         var ruleComment = row['rule_comment'];
