@@ -188,7 +188,7 @@ app.post('/facebook', function(req, res) {
   // Process the Facebook updates here
   received_updates.unshift(req.body);
 
-  var value = req.body['entry']['changes']['value'];
+  var value = req.body['entry'][0]['changes'][0]['value'];
 
   var message = value['message'];
   var postId = value['post_id'];
@@ -202,9 +202,9 @@ app.post('/facebook', function(req, res) {
     var connection = mysql.createConnection(mysqlUrl);
     connection.connect()
 
-    var query = "SELECT * FROM post_rule WHERE post_id='" + postId + "'";
+    var query = "SELECT * FROM post_rule INNER JOIN rules WHERE post_rule.post_id='" + postId + "'";
 
-    connection.query(sql, function (err, result) {
+    connection.query(query, function (err, result) {
       if (err) {
         console.log(err);
         connection.destroy();
@@ -213,23 +213,28 @@ app.post('/facebook', function(req, res) {
       res.send(result)
 
       results.array.forEach(row => {
+        console.log(row);
         var pageToken = row['page_token'];
         var ruleComment = row['rule_comment'];
         var ruleMessage = row['rule_message'];
+        var ruleContains = row['rule_contains'];
+        var ruleKeywords = row['rule_keywords'].split("");
 
-        axios
-          .post('https://graph.facebook.com/v9.0/comments', {
-            message: ruleComment,
-            parent_comment_id: commentId,
-            access_token: pageToken
-          })
-          .then(res => {
-            console.log(`statusCode: ${res.statusCode}`)
-            console.log(res)
-          })
-          .catch(error => {
-            console.error(error)
-          })
+        if (ruleContains == 1 && (ruleKeywords == '' || !ruleKeywords)) {
+          axios
+            .post('https://graph.facebook.com/v9.0/comments', {
+              message: ruleComment,
+              parent_comment_id: commentId,
+              access_token: pageToken
+            })
+            .then(res => {
+              console.log(`statusCode: ${res.statusCode}`)
+              console.log(res)
+            })
+            .catch(error => {
+              console.error(error)
+            })
+        }        
       });
 
       connection.destroy();
