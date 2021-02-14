@@ -17,15 +17,15 @@ const axios = require('axios');
 
 const mysqlUrl = 'mysql://b79c6fd0af81bd:0ae8d011@us-cdbr-east-03.cleardb.com/heroku_3ddac921953a9df?reconnect=true';
 
-var connection = mysql.createConnection(mysqlUrl);
-connection.connect();
+var connection = mysql.createPool(mysqlUrl);
+// connection.connect();
 
-connection.on('error', function(err) {
-  console.log(err.code); // 'ER_BAD_DB_ERROR'
-  if (err.code == 'PROTOCOL_CONNECTION_LOST') {
-    connection.connect();
-  }
-});
+// connection.on('error', function(err) {
+//   console.log(err.code); // 'ER_BAD_DB_ERROR'
+//   if (err.code == 'PROTOCOL_CONNECTION_LOST') {
+//     // connection.connect();
+//   }
+// });
 
 app.set('port', (process.env.PORT || 5000));
 app.listen(app.get('port'));
@@ -225,7 +225,7 @@ app.post('/facebook', function(req, res) {
       //   console.log(row);
 
         if (result.length == 0) {
-          res.send(200);
+          res.send('200');
           return
         }
 
@@ -248,10 +248,10 @@ app.post('/facebook', function(req, res) {
             .then(res => {
               // console.log(`statusCode: ${res.statusCode}`)
               // console.log(res)
-              res.send(200);
+              res.send('200');
             })
             .catch(error => {
-              res.send(200);
+              res.send('200');
               console.error(error)
             })
         }        
