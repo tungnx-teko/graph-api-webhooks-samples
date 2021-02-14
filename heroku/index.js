@@ -29,7 +29,7 @@ app.get('/', function(req, res) {
   console.log(req);
   res.send('<pre>' + JSON.stringify(received_updates, null, 2) + '</pre>');
 });
-
+ 
 app.post('/register-page', function(req, res) {
   var connection = mysql.createConnection(mysqlUrl);
   connection.connect()
