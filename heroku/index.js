@@ -210,9 +210,9 @@ app.post('/facebook', function(req, res) {
         connection.destroy();
         throw err;
       }
-      res.send(result)
+      // res.send(result)
 
-      results.array.forEach(row => {
+      result.array.forEach(row => {
         console.log(row);
         var pageToken = row['page_token'];
         var ruleComment = row['rule_comment'];
