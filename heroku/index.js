@@ -203,7 +203,7 @@ app.post('/facebook', function(req, res) {
     var connection = mysql.createConnection(mysqlUrl);
     connection.connect()
 
-    var query = "SELECT * FROM post_rule INNER JOIN rules WHERE post_rule.post_id='" + postId + "'";
+    var query = "SELECT * FROM post_rule INNER JOIN rules WHERE post_rule.post_id='" + postId + "' AND rules.rule_contains = 1";
 
     connection.query(query, function (err, result) {
       if (err) {
