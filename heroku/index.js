@@ -207,11 +207,13 @@ app.post('/facebook', function(req, res) {
   var item = value['item'];
   var parentId = value['parent_id'];
   var verb = value['verb'];
+  var userId = value['from']['id'];
+  var pageId = req.body['entry'][0]['id'];
 
   if (verb == 'add' && item == 'comment' && parentId == postId) {
     // find all rule and process them
 
-    var query = "SELECT * FROM post_rule INNER JOIN rules WHERE post_rule.post_id='" + postId + "' AND rules.rule_contains = 1";
+    var query = "SELECT * FROM post_rule INNER JOIN rules WHERE post_rule.post_id='" + postId + "' AND rules.rule_contains = 1 AND post_rule.rule_id=rules.rule_id";
 
     connection.query(query, function (err, result) {
       if (err) {
@@ -248,7 +250,19 @@ app.post('/facebook', function(req, res) {
             .then(res => {
               // console.log(`statusCode: ${res.statusCode}`)
               // console.log(res)
-              res.send('200');
+              axios
+                .post('https://graph.facebook.com/v9.0/' + pageId + '/comments', {
+                  message: ruleComment,
+                  parent_comment_id: commentId,
+                  access_token: pageToken
+                })
+                .then(res => {
+                  res.send('200');
+                })
+                .catch(error => {
+                  res.send('200');
+                  console.error(error)
+                })
             })
             .catch(error => {
               res.send('200');
