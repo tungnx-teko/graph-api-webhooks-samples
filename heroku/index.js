@@ -18,7 +18,14 @@ const axios = require('axios');
 const mysqlUrl = 'mysql://b79c6fd0af81bd:0ae8d011@us-cdbr-east-03.cleardb.com/heroku_3ddac921953a9df?reconnect=true';
 
 var connection = mysql.createConnection(mysqlUrl);
-connection.connect()
+connection.connect();
+
+connection.on('error', function(err) {
+  console.log(err.code); // 'ER_BAD_DB_ERROR'
+  if (err.code == 'PROTOCOL_CONNECTION_LOST') {
+    connection.connect();
+  }
+});
 
 app.set('port', (process.env.PORT || 5000));
 app.listen(app.get('port'));
@@ -35,15 +42,15 @@ app.get('/', function(req, res) {
 });
  
 app.post('/register-page', function(req, res) {
-  var connection = mysql.createConnection(mysqlUrl);
-  connection.connect()
+  // var connection = mysql.createConnection(mysqlUrl);
+  // connection.connect()
   var pageId = req.body['page_id'];
   var pageName = req.body['page_name'];
   var pageToken = req.body['page_token'];
 
   if (!pageToken) {
     res.sendStatus(400);
-    connection.destroy();
+    // connection.destroy();
   }
 
   var query = 'SELECT * FROM heroku_3ddac921953a9df.pages WHERE page_id = \'' + pageId + '\'';
@@ -55,54 +62,54 @@ app.post('/register-page', function(req, res) {
       connection.query(sql, function (err, result) {
         if (err) throw err;
         res.send(result)
-        connection.destroy();
+        // connection.destroy();
       });
     } else {
       res.send(results);
-      connection.destroy();
+      // connection.destroy();
     }
   });
 });
 
 app.get('/rule', function(req, res) {
-  var connection = mysql.createConnection(mysqlUrl);
-  connection.connect()
+  // var connection = mysql.createConnection(mysqlUrl);
+  // connection.connect()
 
   var query = 'SELECT * FROM rules';
   
   connection.query(query, function (err, result, fields) {
     if (err) {
       console.log(err);
-      connection.destroy();
+      // connection.destroy();
       throw err;
     }
     res.send(result)
-    connection.destroy();
+    // connection.destroy();
   });
 
 });
 
 app.get('/rule/getByPost', function(req, res) {
-  var connection = mysql.createConnection(mysqlUrl);
-  connection.connect()
+  // var connection = mysql.createConnection(mysqlUrl);
+  // connection.connect()
 
   var query = "SELECT rules.rule_id, rules.rule_name, rules.rule_contains, rules.rule_keywords, rules.rule_comment, rules.rule_message FROM rules INNER JOIN post_rule WHERE rules.rule_id=post_rule.rule_id AND post_rule.post_id = '" + req.query["post_id"] + "'";
   
   connection.query(query, function (err, result, fields) {
     if (err) {
       console.log(err);
-      connection.destroy();
+      // connection.destroy();
       throw err;
     }
     res.send(result)
-    connection.destroy();
+    // connection.destroy();
   });
 
 });
 
 app.post('/rule/removeFromPost', function(req, res) {
-  var connection = mysql.createConnection(mysqlUrl);
-  connection.connect()
+  // var connection = mysql.createConnection(mysqlUrl);
+  // connection.connect()
 
   var ruleId = req.body['rule_id'];
   var postId = req.body['post_id'];
@@ -112,18 +119,18 @@ app.post('/rule/removeFromPost', function(req, res) {
   connection.query(sql, function (err, result, fields) {
     if (err) {
       console.log(err);
-      connection.destroy();
+      // connection.destroy();
       throw err;
     }
     res.send(result)
-    connection.destroy();
+    // connection.destroy();
   });
 
 });
 
 app.post('/rule/addToPost', function(req, res) {
-  var connection = mysql.createConnection(mysqlUrl);
-  connection.connect()
+  // var connection = mysql.createConnection(mysqlUrl);
+  // connection.connect()
 
   var ruleId = req.body['rule_id'];
   var postId = req.body['post_id'];
@@ -134,18 +141,18 @@ app.post('/rule/addToPost', function(req, res) {
   connection.query(sql, function (err, result, fields) {
     if (err) {
       console.log(err);
-      connection.destroy();
+      // connection.destroy();
       throw err;
     }
     res.send(result)
-    connection.destroy();
+    // connection.destroy();
   });
 
 });
 
 app.post('/rule', function(req, res) {
-  var connection = mysql.createConnection(mysqlUrl);
-  connection.connect()
+  // var connection = mysql.createConnection(mysqlUrl);
+  // connection.connect()
   var ruleName = req.body['rule_name'];
   var ruleKeywords = req.body['rule_keywords'];
   var ruleContains = req.body['rule_contains'];
@@ -157,11 +164,11 @@ app.post('/rule', function(req, res) {
   connection.query(sql, function (err, result) {
     if (err) {
       console.log(err);
-      connection.destroy();
+      // connection.destroy();
       throw err;
     }
     res.send(result)
-    connection.destroy();
+    // connection.destroy();
   });
 
 });
