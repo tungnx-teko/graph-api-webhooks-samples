@@ -12,7 +12,8 @@ var app = express();
 var xhub = require('express-x-hub');
 
 // Connect mysql
-var mysql = require('mysql')
+var mysql = require('mysql');
+const axios = require('axios');
 
 const mysqlUrl = 'mysql://b79c6fd0af81bd:0ae8d011@us-cdbr-east-03.cleardb.com/heroku_3ddac921953a9df?reconnect=true';
 
@@ -183,7 +184,59 @@ app.post('/facebook', function(req, res) {
   }
 
   console.log('request header X-Hub-Signature validated');
+
   // Process the Facebook updates here
   received_updates.unshift(req.body);
+
+  var value = req.body['entry']['changes']['value'];
+
+  var message = value['message'];
+  var postId = value['post_id'];
+  var commentId = value['comment_id'];
+  var item = value['item'];
+  var parentId = value['parent_id'];
+  var verb = value['verb'];
+
+  if (verb == 'add' && item == 'comment' && parentId == postId) {
+    // find all rule and process them
+    var connection = mysql.createConnection(mysqlUrl);
+    connection.connect()
+
+    var query = "SELECT * FROM post_rule WHERE post_id='" + postId + "'";
+
+    connection.query(sql, function (err, result) {
+      if (err) {
+        console.log(err);
+        connection.destroy();
+        throw err;
+      }
+      res.send(result)
+
+      results.array.forEach(row => {
+        var pageToken = row['page_token'];
+        var ruleComment = row['rule_comment'];
+        var ruleMessage = row['rule_message'];
+
+        axios
+          .post('https://graph.facebook.com/v9.0/comments', {
+            message: ruleComment,
+            parent_comment_id: commentId,
+            access_token: pageToken
+          })
+          .then(res => {
+            console.log(`statusCode: ${res.statusCode}`)
+            console.log(res)
+          })
+          .catch(error => {
+            console.error(error)
+          })
+      });
+
+      connection.destroy();
+    });
+
+  }
+
+
   res.sendStatus(200);
 });
