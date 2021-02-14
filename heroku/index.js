@@ -17,6 +17,9 @@ const axios = require('axios');
 
 const mysqlUrl = 'mysql://b79c6fd0af81bd:0ae8d011@us-cdbr-east-03.cleardb.com/heroku_3ddac921953a9df?reconnect=true';
 
+var connection = mysql.createConnection(mysqlUrl);
+connection.connect()
+
 app.set('port', (process.env.PORT || 5000));
 app.listen(app.get('port'));
 
@@ -200,15 +203,13 @@ app.post('/facebook', function(req, res) {
 
   if (verb == 'add' && item == 'comment' && parentId == postId) {
     // find all rule and process them
-    var connection = mysql.createConnection(mysqlUrl);
-    connection.connect()
 
     var query = "SELECT * FROM post_rule INNER JOIN rules WHERE post_rule.post_id='" + postId + "' AND rules.rule_contains = 1";
 
     connection.query(query, function (err, result) {
       if (err) {
         console.log(err);
-        connection.destroy();
+        // connection.destroy();
         throw err;
       }
       // console.log(result);
@@ -238,18 +239,18 @@ app.post('/facebook', function(req, res) {
               access_token: pageToken
             })
             .then(res => {
-              console.log(`statusCode: ${res.statusCode}`)
-              console.log(res)
+              // console.log(`statusCode: ${res.statusCode}`)
+              // console.log(res)
               res.send(200);
             })
             .catch(error => {
-              res.send(400);
+              res.send(200);
               console.error(error)
             })
         }        
       // });
 
-      connection.destroy();
+      // connection.destroy();
     });
 
   }
